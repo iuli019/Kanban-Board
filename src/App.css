@@ -1,0 +1,24 @@
+body {
+  background-color: white;
+}
+.list-container {
+  background-color: #ccc;
+  border-radius: 5px;
+  text-align: center;
+  width: 280px;
+  padding: 10px;
+  margin: 5px;
+  margin-left: 27px;
+}
+.button {
+  margin: 20px;
+}
+.task {
+  border-radius: 5px;
+  border-color: black;
+  border-style: solid;
+  padding: 10px;
+  border-width: 1px;
+  margin: 1px;
+  margin-bottom: 15px;
+}

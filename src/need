@@ -1,0 +1,46 @@
+ // if (this.key === valueOf(v[0])) {
+    //   if (task.index === -1) {
+    //     this.setState({
+    //       show: false,
+    //       task: this.state.task.backlog.concat(task),
+    //     });
+    //   } else {
+    //     const index = task.index;
+    //     const changedTask = [...this.state.task.backlog];
+    //     changedTask[index].name = this.state.name;
+    //     changedTask[index].description = this.state.description;
+    //     changedTask[index].description = this.state.indexEdit;
+
+    //     this.setState({ show: false, backlog: changedTask });
+    //   }
+    // }
+
+
+    
+
+    //   this.setState({ show: false, : changedTask });
+    // if (task.title === this.state.title) {
+    //   if (task.index === -1) {
+    //     const key = this.props.index;
+    //     console.log(task, task, "key:", key);
+    //     const panel = {
+    //       name: this.state.title,
+    //       task: [],
+    //     };
+    //     panel.task = [...panel.task.concat(task)];
+    //     this.setState({
+    //       show: false,
+    //       panel: [...this.state.panel.concat(panel)],
+    //     });
+    //   } else {
+    //     const index = task.idex;
+    //     const key = this.props.index;
+    //     const panel = [...this.state.pane];
+    //     const task = [...panel[key].task];
+    //     task[index].nume = this.state.name;
+    //     task[index].description = this.state.description;
+    //     task[index].indexEdit = this.state.indexEdit;
+    //     panel[key].task = [...task];
+    //     this.setState({ panel });
+    //   }
+    // }
