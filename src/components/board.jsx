@@ -126,26 +126,6 @@ class Board extends Component {
     localStorage.setItem("allPanel", save);
   };
 
-  onResult = (index, indexTask) => {
-    console.log(index, indexTask);
-    const result = {
-      draggableID: this.state.panel[index].task[indexTask].id,
-      type: "TYPE",
-      reason: "DROP",
-      source: {
-        droppableId: this.state.panel[index].id,
-        index: 0,
-      },
-      destination: {
-        droppableId: this.state.panel[index].id,
-        index: 1,
-      },
-      index: index,
-      indexTask: indexTask,
-    };
-    this.setState({ result });
-  };
-
   onDragEnd = (result) => {
     const { destination, source } = result;
     if (!destination) {
