@@ -1,129 +1,76 @@
-import React, { Component } from "react";
+import React from "react";
 import Modal from "./modal";
 import "../App.css";
 import Task from "./task";
+import { Droppable } from "react-beautiful-dnd";
 
-class List extends Component {
-  state = {
-    show: false,
-    task: [{ name: "task1", description: "task2" }],
-    name: "",
-    description: " ",
-    title: "",
-    indexEdit: 0,
+const List = (props) => {
+  const showModalEdit = (index) => {
+    props.onModalEdit(index);
   };
 
-  showModal = () => {
-    this.setState({ show: true });
+  const handleNameChange = (e) => {
+    props.onName(e);
   };
 
-  hideModal = (task) => {
-    if (task.index === -1) {
-      this.setState({
-        show: false,
-        task: this.state.task.concat(task),
-      });
-    } else {
-      const index = task.index;
-      const changedTask = [...this.state.task];
-      changedTask[index].name = this.state.name;
-      changedTask[index].description = this.state.description;
-      changedTask[index].description = this.state.indexEdit;
-      this.setState({ show: false, task: changedTask });
-    }
-    this.props.onTask(this.state.task);
-
-    console.log(this.state);
-    const save = JSON.stringify(this.state.task);
-    console.log(save);
-    localStorage.setItem("task", save);
+  const handleDescpChange = (e) => {
+    props.onDescp(e);
   };
 
-  reg = () => {
-    const task = {
-      name: this.state.name,
-      description: this.state.description,
-      index: this.state.indexEdit,
-      title: this.props.title,
-    };
-    this.hideModal(task);
+  const reg = () => {
+    props.onReg();
   };
 
-  componentDidMount() {
-    // const save = localStorage.getItem("task");
-    // console.log(save);
-    // if (save) {
-    //   const task = JSON.parse(save);
-    //   this.setState({ task });
-    // }
-  }
+  return (
+    <React.Fragment>
+      <div className="list-container">
+        <h4 className="title">{props.title}</h4>
 
-  showModalEdit = (index) => {
-    console.log("pressed");
-    this.setState({
-      show: true,
-      name: this.state.task[index].name,
-      description: this.state.task[index].description,
-      indexEdit: index,
-      title: this.state.title,
-    });
-  };
+        <Droppable droppableId={props.id}>
+          {(provided) => {
+            return (
+              <div
+                className="task"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {props.task.map((item, index) => {
+                  return (
+                    <div key={index} onClick={() => showModalEdit(index)}>
+                      <Task
+                        name={item.name}
+                        description={item.description}
+                        id={item.id}
+                        index={index}
+                      />
+                    </div>
+                  );
+                })}
+                {provided.placeholder}
+              </div>
+            );
+          }}
+        </Droppable>
 
-  showModalNew = () => {
-    this.setState({
-      show: true,
-      name: "",
-      description: "",
-      indexEdit: -1,
-      title: this.props.title,
-    });
-  };
-
-  handleNameChange = (e) => {
-    this.setState({ name: e });
-  };
-
-  handleDescpChange = (e) => {
-    this.setState({ description: e });
-  };
-
-  render() {
-    console.log(this.state);
-    return (
-      <React.Fragment>
-        <div className="list-container">
-          <h4 className="title">{this.props.title}</h4>
-
-          <div className="task">
-            {this.state.task.map((item, index) => {
-              return (
-                <div key={index} onClick={() => this.showModalEdit(index)}>
-                  <Task name={item.name} description={item.description} />
-                </div>
-              );
-            })}
-          </div>
-
-          <button
-            className="btn  btn-outline-dark"
-            type="button"
-            onClick={this.showModalNew}
-          >
-            Add New Task
-          </button>
-        </div>
-        <Modal
-          className="container"
-          show={this.state.show}
-          onClose={this.reg}
-          onNameChange={this.handleNameChange}
-          onDescpChange={this.handleDescpChange}
-          name={this.state.name}
-          description={this.state.description}
-        ></Modal>
-      </React.Fragment>
-    );
-  }
-}
+        <button
+          className="btn  btn-outline-dark"
+          type="button"
+          onClick={() => props.onModalNew(props.index)}
+        >
+          Add New Task
+        </button>
+      </div>
+      <Modal
+        className="container"
+        show={props.onSModal}
+        onClose={reg}
+        onNameChange={handleNameChange}
+        onDescpChange={handleDescpChange}
+        name={props.name}
+        description={props.description}
+      ></Modal>
+    </React.Fragment>
+  );
+};
 
 export default List;

@@ -44,3 +44,61 @@
     //     this.setState({ panel });
     //   }
     // }
+
+    
+  // hideModal = (task) => {
+  //   if (task.index === -1) {
+  //     this.setState({
+  //       show: false,
+  //       task: this.state.task.concat(task),
+  //     });
+  //   } else {
+  //     const index = task.index;
+  //     const changedTask = [...this.state.task];
+  //     changedTask[index].name = this.state.name;
+  //     changedTask[index].description = this.state.description;
+  //     changedTask[index].description = this.state.indexEdit;
+  //     this.setState({ show: false, task: changedTask });
+  //   }
+
+  // };
+  // console.log(this.state);
+  // const save = JSON.stringify(this.state.task);
+  // console.log(save);
+  // localStorage.setItem("task", save);
+
+  // reg = () => {
+  //   const task = {
+  //     name: this.state.name,
+  //     description: this.state.description,
+  //     index: this.state.indexEdit,
+  //     title: this.props.title,
+  //   };
+  //   this.hideModal(task);
+  // };
+
+  componentDidMount() {
+    // const save = localStorage.getItem("task");
+    // console.log(save);
+    // if (save) {
+    //   const task = JSON.parse(save);
+    //   this.setState({ task });
+    // }
+  }
+
+
+
+
+    if (task.index === -1) {
+      this.setState({
+        show: false,
+        task: this.state.task.concat(task),
+      });
+    } else {
+      const index = task.index;
+      const changedTask = [...this.state.task];
+      changedTask[index].name = this.state.name;
+      changedTask[index].description = this.state.description;
+      changedTask[index].description = this.state.indexEdit;
+      this.setState({ show: false, task: changedTask });
+    }
