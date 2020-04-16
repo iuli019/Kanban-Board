@@ -128,12 +128,6 @@ class Board extends Component {
         saveLocalStorage();
       });
     }
-<<<<<<< HEAD
-=======
-    const save = JSON.stringify(this.state.panel);
-    console.log(save);
-    localStorage.setItem("allPanel", save);
->>>>>>> 81f456930f33c1daeff28b27aec455df29326e5f
   };
 
   onDragEnd = (result) => {
