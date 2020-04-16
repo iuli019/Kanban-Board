@@ -29,11 +29,7 @@ const List = (props) => {
         <Droppable droppableId={props.id}>
           {(provided) => {
             return (
-              <div
-                className="task"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
+              <div {...provided.droppableProps} ref={provided.innerRef}>
                 {props.task.map((item, index) => {
                   return (
                     <div key={index} onClick={() => showModalEdit(index)}>
@@ -53,7 +49,7 @@ const List = (props) => {
         </Droppable>
 
         <button
-          className="btn  btn-outline-dark"
+          className="btn  btn-outline-dark button-modal"
           type="button"
           onClick={() => props.onModalNew(props.index)}
         >

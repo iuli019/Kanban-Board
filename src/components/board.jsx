@@ -16,7 +16,6 @@ class Board extends Component {
     indexEdit: 0,
     index: 0,
     listIndex: 0,
-    result: {},
   };
 
   handleClick = () => {
@@ -37,19 +36,10 @@ class Board extends Component {
       index: index + 1,
     });
     console.log(this.state);
-    const save = JSON.stringify(this.state.panel);
-    console.log(save);
-    localStorage.setItem("panel", save);
   };
 
   componentDidMount() {
-    let save = localStorage.getItem("panel");
-    console.log(save);
-    if (save) {
-      const panel = JSON.parse(save);
-      this.setState({ panel });
-    }
-    save = localStorage.getItem("allPanel");
+    const save = localStorage.getItem("panel");
     if (save) {
       const panel = JSON.parse(save);
       this.setState({ panel });
@@ -81,13 +71,19 @@ class Board extends Component {
   };
 
   showModalNew = (index) => {
-    this.setState({ listIndex: index });
+    console.log(index);
     const panel = [...this.state.panel];
     const key = index;
     console.log(index);
     panel[key].show = true;
 
-    this.setState({ panel, name: "", description: "", indexEdit: -1 });
+    this.setState({
+      panel,
+      name: "",
+      description: "",
+      indexEdit: -1,
+      listIndex: index,
+    });
   };
 
   onShowModalEdit = (index) => {
@@ -104,12 +100,20 @@ class Board extends Component {
   };
 
   hideModal = (task) => {
+    const saveLocalStorage = () => {
+      const save = JSON.stringify(this.state.panel);
+      console.log(save);
+      localStorage.setItem("panel", save);
+    };
     const key = this.state.listIndex;
     if (task.index === -1) {
       const panel = this.state.panel;
       panel[key].show = false;
       panel[key].task = [...panel[key].task.concat(task)];
-      this.setState({ panel });
+      console.log(panel);
+      this.setState({ panel }, () => {
+        saveLocalStorage();
+      });
     } else {
       const index = task.index;
       const panel = [...this.state.panel];
@@ -119,31 +123,11 @@ class Board extends Component {
       taskEdit[index].description = this.state.description;
       taskEdit[index].indexEdit = this.state.indexEdit;
       panel[key].task = [...taskEdit];
-      this.setState({ panel });
+      console.log(panel);
+      this.setState({ panel }, () => {
+        saveLocalStorage();
+      });
     }
-    const save = JSON.stringify(this.state.panel);
-    console.log(save);
-    localStorage.setItem("allPanel", save);
-  };
-
-  onResult = (index, indexTask) => {
-    console.log(index, indexTask);
-    const result = {
-      draggableID: this.state.panel[index].task[indexTask].id,
-      type: "TYPE",
-      reason: "DROP",
-      source: {
-        droppableId: this.state.panel[index].id,
-        index: 0,
-      },
-      destination: {
-        droppableId: this.state.panel[index].id,
-        index: 1,
-      },
-      index: index,
-      indexTask: indexTask,
-    };
-    this.setState({ result });
   };
 
   onDragEnd = (result) => {
@@ -193,6 +177,11 @@ class Board extends Component {
     newPanel[destinationListIndex] = newDestinationList;
 
     this.setState({ panel: newPanel });
+    console.log(this.state.panel);
+
+    const save = JSON.stringify(newPanel);
+    localStorage.setItem("panel", save);
+    console.log(save);
   };
 
   removeFromList = (list, index) => {
@@ -205,12 +194,11 @@ class Board extends Component {
     const newList = [...list];
     const firstHalf = newList.splice(0, index);
     const secondHalf = newList;
-    console.log(firstHalf, secondHalf);
+    //console.log(firstHalf, secondHalf);
     return [...firstHalf, task, ...secondHalf];
   };
 
   render() {
-    console.log(this.state);
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <React.Fragment>
