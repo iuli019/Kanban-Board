@@ -5,6 +5,7 @@ import "../App.css";
 import Modal from "./modalBoard";
 import { v4 as uuidv4 } from "uuid";
 import { DragDropContext } from "react-beautiful-dnd";
+import http from "../services/httpService";
 
 class Board extends Component {
   state = {
@@ -16,7 +17,6 @@ class Board extends Component {
     indexEdit: 0,
     index: 0,
     listIndex: 0,
-    result: {},
   };
 
   handleClick = () => {
@@ -27,33 +27,41 @@ class Board extends Component {
     this.setState({ title: e });
   };
 
-  hide = (title) => {
-    const index = this.state.index;
+  hide = async (title) => {
+    debugger;
     console.log("pressed");
-    const panel = { show: false, title: title, id: uuidv4(), task: [] };
-    this.setState({
-      show: false,
-      panel: [...this.state.panel.concat(panel)],
-      index: index + 1,
-    });
+    const panel = this.state.panel;
+    const newPanel = { show: false, title: title, id: uuidv4() };
+
+    const { data: addedPanel } = await http.post(
+      "http://localhost:5000/panels/add",
+      newPanel
+    );
+    addedPanel.task = [];
+    const update = [...panel, addedPanel];
+
+    this.setState({ show: false, panel: update });
     console.log(this.state);
-    const save = JSON.stringify(this.state.panel);
-    console.log(save);
-    localStorage.setItem("panel", save);
   };
 
-  componentDidMount() {
-    let save = localStorage.getItem("panel");
-    console.log(save);
-    if (save) {
-      const panel = JSON.parse(save);
-      this.setState({ panel });
-    }
-    save = localStorage.getItem("allPanel");
-    if (save) {
-      const panel = JSON.parse(save);
-      this.setState({ panel });
-    }
+  async populatePanel() {
+    const { data: panel } = await http.get("http://localhost:5000/panels/");
+    console.log(panel);
+    const { data: task } = await http.get("http://localhost:5000/tasks/");
+    console.log(task);
+    const newPanel = panel.map((panel) => {
+      const taskList = task.filter((task) => task.panelId === panel._id);
+      panel = { ...panel, task: taskList };
+      console.log(panel);
+      return panel;
+    });
+
+    console.log(newPanel);
+    this.setState({ panel: newPanel });
+  }
+
+  async componentDidMount() {
+    await this.populatePanel();
   }
 
   reg = () => {
@@ -70,83 +78,100 @@ class Board extends Component {
     this.setState({ name: e });
   };
 
-  onReg = () => {
+  onReg = (indexLista) => {
     const task = {
       name: this.state.name,
       description: this.state.description,
       index: this.state.indexEdit,
       id: Math.floor(Math.random() * (100 - 10 + 1)) + 10,
+      _id: this.state.taskId,
     };
-    this.hideModal(task);
+    this.hideModal(task, indexLista);
   };
 
   showModalNew = (index) => {
     this.setState({ listIndex: index });
     const panel = [...this.state.panel];
     const key = index;
+
     console.log(index);
     panel[key].show = true;
 
     this.setState({ panel, name: "", description: "", indexEdit: -1 });
   };
 
-  onShowModalEdit = (index) => {
+  onShowModalEdit = (index, taskIndex) => {
     console.log("pressed");
-    const key = this.state.listIndex;
+    const key = index;
+    console.log(index, taskIndex);
+
     const panel = this.state.panel;
     panel[key].show = true;
+
     this.setState({
       panel: panel,
-      name: this.state.panel[key].task[index].name,
-      description: this.state.panel[key].task[index].description,
-      indexEdit: index,
-    });
+      name: this.state.panel[key].task[taskIndex].name,
+      description: this.state.panel[key].task[taskIndex].description,
+      indexEdit: taskIndex,
+      taskId: this.state.panel[key].task[taskIndex]._id,
+    }); // reparat index taskIndex + hide modal
   };
 
-  hideModal = (task) => {
-    const key = this.state.listIndex;
+  hideModal = async (task, indexLista) => {
+    console.log(task);
+    const key = indexLista;
     if (task.index === -1) {
       const panel = this.state.panel;
+      console.log(panel[key]);
       panel[key].show = false;
-      panel[key].task = [...panel[key].task.concat(task)];
+
+      console.log(panel[key]);
+
+      const newTask = { ...task, panelId: panel[key]._id, indexEdit: 0 };
+
+      await http.post("http://localhost:5000/tasks/add", newTask);
+      // await http.post(
+      //   `http://localhost:5000/panels/update/${panel[key]._id}`,
+      //   newPanel
+      // );
+      panel[key].task = [...panel[key].task, newTask];
       this.setState({ panel });
     } else {
-      const index = task.index;
+      const index = this.state.indexEdit;
       const panel = [...this.state.panel];
       panel[key].show = false;
-      const taskEdit = [...panel[key].task];
-      taskEdit[index].name = this.state.name;
-      taskEdit[index].description = this.state.description;
-      taskEdit[index].indexEdit = this.state.indexEdit;
-      panel[key].task = [...taskEdit];
+
+      // const newPanel = { ...panel[key] };
+      // newPanel.show = false;
+      // delete newPanel._id;
+      // delete newPanel.task;
+      // newPanel.id = key;
+      // console.log(newPanel);
+      // console.log(task);
+
+      const taskEdit = panel[key].task[index];
+      console.log(taskEdit);
+
+      taskEdit.name = this.state.name;
+      taskEdit.description = this.state.description;
+      taskEdit.indexEdit = this.state.indexEdit;
+      taskEdit.panelId = panel[key]._id;
+
+      panel[key].task[index] = taskEdit;
+
+      // await http.post(
+      //   `http://localhost:5000/panels/update/${panel[key]._id}`,
+      //   newPanel
+      // );
+      await http.post(
+        `http://localhost:5000/tasks/update/${task._id}`,
+        taskEdit
+      );
       this.setState({ panel });
     }
-    const save = JSON.stringify(this.state.panel);
-    console.log(save);
-    localStorage.setItem("allPanel", save);
   };
 
-  onResult = (index, indexTask) => {
-    console.log(index, indexTask);
-    const result = {
-      draggableID: this.state.panel[index].task[indexTask].id,
-      type: "TYPE",
-      reason: "DROP",
-      source: {
-        droppableId: this.state.panel[index].id,
-        index: 0,
-      },
-      destination: {
-        droppableId: this.state.panel[index].id,
-        index: 1,
-      },
-      index: index,
-      indexTask: indexTask,
-    };
-    this.setState({ result });
-  };
-
-  onDragEnd = (result) => {
+  onDragEnd = async (result) => {
     const { destination, source } = result;
     if (!destination) {
       return;
@@ -175,16 +200,22 @@ class Board extends Component {
 
     const newSourceList = {
       ...sourceList,
-      task: this.removeFromList(sourceList.task, source.index),
+      task: await this.removeFromList(sourceList.task, source.index),
     };
+
+    const panel = [...this.state.panel];
+
     const newDestinationList = {
       ...destinationList,
-      task: this.addToList(
+      task: await this.addToList(
         source.droppableId === destination.droppableId
           ? newSourceList.task
           : destinationList.task,
         destination.index,
-        sourceList.task[source.index]
+        sourceList.task[source.index],
+        source.droppableId === destination.droppableId
+          ? panel[sourceListIndex]._id
+          : panel[destinationListIndex]._id
       ),
     };
 
@@ -193,47 +224,59 @@ class Board extends Component {
     newPanel[destinationListIndex] = newDestinationList;
 
     this.setState({ panel: newPanel });
+    console.log(this.state.panel);
   };
 
-  removeFromList = (list, index) => {
+  removeFromList = async (list, index) => {
     const newList = [...list];
-    newList.splice(index, 1);
+    const taskId = newList[index]._id;
+    newList.splice(index, 1); // http.delete
+
+    await http.delete(`http://localhost:5000/tasks/${taskId}`);
     return newList;
   };
 
-  addToList = (list, index, task) => {
-    const newList = [...list];
-    const firstHalf = newList.splice(0, index);
-    const secondHalf = newList;
-    console.log(firstHalf, secondHalf);
+  addToList = async (taskList, index, task, listID) => {
+    const newtaskList = [...taskList];
+    const firstHalf = newtaskList.splice(0, index);
+    const newTask = task;
+    newTask.panelId = listID;
+    const secondHalf = newtaskList;
+
+    await http.post("http://localhost:5000/tasks/add", newTask);
     return [...firstHalf, task, ...secondHalf];
   };
 
   render() {
     console.log(this.state);
+    debugger;
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <React.Fragment>
           <div className="row">
-            {this.state.panel.map((item, index) => (
-              <List
-                key={index}
-                index={index}
-                title={item.title}
-                onDescp={this.handleDescpChange}
-                onName={this.handleNameChange}
-                onSModal={this.state.panel[index].show}
-                onModalEdit={(index) => this.onShowModalEdit(index)}
-                onReg={this.onReg}
-                task={item.task}
-                onModalNew={(index) => this.showModalNew(index)}
-                name={this.state.name}
-                description={this.state.description}
-                id={this.state.panel[index].id}
-                result={(index, indexTask) => this.onResult(index, indexTask)}
-                className="col"
-              />
-            ))}
+            {this.state.panel.map((item, index) => {
+              debugger;
+              return (
+                <List
+                  key={index}
+                  index={index}
+                  title={item.title}
+                  onDescp={this.handleDescpChange}
+                  onName={this.handleNameChange}
+                  onSModal={this.state.panel[index].show}
+                  onModalEdit={(taskIndex) =>
+                    this.onShowModalEdit(index, taskIndex)
+                  }
+                  onReg={() => this.onReg(index)}
+                  task={item.task}
+                  onModalNew={() => this.showModalNew(index)}
+                  name={this.state.name}
+                  description={this.state.description}
+                  id={this.state.panel[index].id}
+                  className="col"
+                />
+              );
+            })}
           </div>
           <button
             className=" button btn  btn-outline-dark"

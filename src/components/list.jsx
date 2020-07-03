@@ -20,20 +20,17 @@ const List = (props) => {
   const reg = () => {
     props.onReg();
   };
+  if (!props.task) return null;
+  else console.log(props.task);
 
   return (
     <React.Fragment>
       <div className="list-container">
         <h4 className="title">{props.title}</h4>
-
         <Droppable droppableId={props.id}>
           {(provided) => {
             return (
-              <div
-                className="task"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
+              <div {...provided.droppableProps} ref={provided.innerRef}>
                 {props.task.map((item, index) => {
                   return (
                     <div key={index} onClick={() => showModalEdit(index)}>
@@ -51,9 +48,8 @@ const List = (props) => {
             );
           }}
         </Droppable>
-
         <button
-          className="btn  btn-outline-dark"
+          className="btn  btn-outline-dark button-modal"
           type="button"
           onClick={() => props.onModalNew(props.index)}
         >

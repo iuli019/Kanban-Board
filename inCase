@@ -1,0 +1,25 @@
+// const newPanel = { ...panel[key] };
+      // delete newPanel._id;
+      // delete newPanel.task;
+      // newPanel.id = key;
+      // console.log(newPanel);
+
+      // panel[key].task = [...panel[key].task.concat(task)];
+      // console.log(panel);
+
+// await http.post(
+      //   `http://localhost:5000/panels/update/${panel[key]._id}`,
+      //   newPanel
+      // );
+
+       // const newPanel = { ...panel[key] };
+      // newPanel.show = false;
+      // delete newPanel._id;
+      // delete newPanel.task;
+      // newPanel.id = key;
+      // console.log(newPanel);
+      // console.log(task);
+       // await http.post(
+      //   `http://localhost:5000/panels/update/${panel[key]._id}`,
+      //   newPanel
+      // );

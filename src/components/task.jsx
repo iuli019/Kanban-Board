@@ -1,5 +1,5 @@
 import React from "react";
-import "./modal.css";
+import "../App.css";
 import { Draggable } from "react-beautiful-dnd";
 
 const Task = (props) => (
@@ -11,8 +11,10 @@ const Task = (props) => (
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
+            className="task"
           >
-            {`${props.name}-${props.id}`}
+            {props.name}
+            {/* {`${props.name}-${props.id}`} */}
           </h5>
         );
       }}
