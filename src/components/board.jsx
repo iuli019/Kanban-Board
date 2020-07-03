@@ -90,14 +90,20 @@ class Board extends Component {
   };
 
   showModalNew = (index) => {
-    this.setState({ listIndex: index });
+    console.log(index);
     const panel = [...this.state.panel];
     const key = index;
 
     console.log(index);
     panel[key].show = true;
 
-    this.setState({ panel, name: "", description: "", indexEdit: -1 });
+    this.setState({
+      panel,
+      name: "",
+      description: "",
+      indexEdit: -1,
+      listIndex: index,
+    });
   };
 
   onShowModalEdit = (index, taskIndex) => {
