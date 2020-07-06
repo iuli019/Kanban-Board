@@ -7,15 +7,17 @@ const Task = (props) => (
     <Draggable draggableId={String(props.id)} index={props.index}>
       {(provided) => {
         return (
-          <h5
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            className="task"
-          >
-            {props.name}
-            {/* {`${props.name}-${props.id}`} */}
-          </h5>
+          <div className="text">
+            <h5
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              {props.name}
+
+              {/* {`${props.name}-${props.id}`} */}
+            </h5>
+          </div>
         );
       }}
     </Draggable>

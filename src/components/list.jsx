@@ -3,6 +3,12 @@ import Modal from "./modal";
 import "../App.css";
 import Task from "./task";
 import { Droppable } from "react-beautiful-dnd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTimesCircle,
+  faTrash,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons";
 
 const List = (props) => {
   const showModalEdit = (index) => {
@@ -26,20 +32,43 @@ const List = (props) => {
   return (
     <React.Fragment>
       <div className="list-container">
-        <h4 className="title">{props.title}</h4>
+        <div className="title">
+          <h4>{props.title}</h4>
+          <FontAwesomeIcon
+            className="little"
+            icon={faEdit}
+            onClick={() => props.editList()}
+          />
+        </div>
         <Droppable droppableId={props.id}>
           {(provided) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {props.task.map((item, index) => {
                   return (
-                    <div key={index} onClick={() => showModalEdit(index)}>
-                      <Task
-                        name={item.name}
-                        description={item.description}
-                        id={item.id}
-                        index={index}
-                      />
+                    <div className="task" key={index}>
+                      <div className="row">
+                        <div
+                          className="col"
+                          onClick={() => showModalEdit(index)}
+                        >
+                          <Task
+                            name={item.name}
+                            description={item.description}
+                            id={item.id}
+                            index={index}
+                          />
+                        </div>
+                        <div className="col">
+                          <FontAwesomeIcon
+                            onClick={() => {
+                              props.deleteTask(props.index, index);
+                            }}
+                            className="icon"
+                            icon={faTimesCircle}
+                          />
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
@@ -55,6 +84,12 @@ const List = (props) => {
         >
           Add New Task
         </button>
+
+        <FontAwesomeIcon
+          className="icon2"
+          icon={faTrash}
+          onClick={() => props.deleteList()}
+        />
       </div>
       <Modal
         className="container"

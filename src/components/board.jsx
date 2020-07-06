@@ -29,18 +29,30 @@ class Board extends Component {
 
   hide = async (title) => {
     debugger;
-    console.log("pressed");
-    const panel = this.state.panel;
-    const newPanel = { show: false, title: title, id: uuidv4() };
+    const titleIndex = this.state.titleChanged;
 
-    const { data: addedPanel } = await http.post(
-      "http://localhost:5000/panels/add",
-      newPanel
-    );
-    addedPanel.task = [];
-    const update = [...panel, addedPanel];
+    if (titleIndex >= 0) {
+      let titleUpdate = [...this.state.panel];
+      titleUpdate[titleIndex].title = title;
+      const panelEdit = titleUpdate[titleIndex];
+      await http.post(
+        `http://localhost:5000/panels/update/${panelEdit._id}`,
+        panelEdit
+      );
+      this.setState({ show: false, panel: titleUpdate });
+    } else {
+      const panel = [...this.state.panel];
+      const newPanel = { show: false, title: title, id: uuidv4() };
 
-    this.setState({ show: false, panel: update });
+      const { data: addedPanel } = await http.post(
+        "http://localhost:5000/panels/add",
+        newPanel
+      );
+      addedPanel.task = [];
+      const update = [...panel, addedPanel];
+
+      this.setState({ show: false, panel: update });
+    }
     console.log(this.state);
   };
 
@@ -120,7 +132,7 @@ class Board extends Component {
       description: this.state.panel[key].task[taskIndex].description,
       indexEdit: taskIndex,
       taskId: this.state.panel[key].task[taskIndex]._id,
-    }); // reparat index taskIndex + hide modal
+    });
   };
 
   hideModal = async (task, indexLista) => {
@@ -136,24 +148,13 @@ class Board extends Component {
       const newTask = { ...task, panelId: panel[key]._id, indexEdit: 0 };
 
       await http.post("http://localhost:5000/tasks/add", newTask);
-      // await http.post(
-      //   `http://localhost:5000/panels/update/${panel[key]._id}`,
-      //   newPanel
-      // );
+
       panel[key].task = [...panel[key].task, newTask];
       this.setState({ panel });
     } else {
       const index = this.state.indexEdit;
       const panel = [...this.state.panel];
       panel[key].show = false;
-
-      // const newPanel = { ...panel[key] };
-      // newPanel.show = false;
-      // delete newPanel._id;
-      // delete newPanel.task;
-      // newPanel.id = key;
-      // console.log(newPanel);
-      // console.log(task);
 
       const taskEdit = panel[key].task[index];
       console.log(taskEdit);
@@ -165,10 +166,6 @@ class Board extends Component {
 
       panel[key].task[index] = taskEdit;
 
-      // await http.post(
-      //   `http://localhost:5000/panels/update/${panel[key]._id}`,
-      //   newPanel
-      // );
       await http.post(
         `http://localhost:5000/tasks/update/${task._id}`,
         taskEdit
@@ -236,7 +233,7 @@ class Board extends Component {
   removeFromList = async (list, index) => {
     const newList = [...list];
     const taskId = newList[index]._id;
-    newList.splice(index, 1); // http.delete
+    newList.splice(index, 1);
 
     await http.delete(`http://localhost:5000/tasks/${taskId}`);
     return newList;
@@ -253,15 +250,47 @@ class Board extends Component {
     return [...firstHalf, task, ...secondHalf];
   };
 
+  deleteTask = async (listIndex, taskIndex) => {
+    debugger;
+    console.log("pressed");
+    let panel = [...this.state.panel];
+    await http.delete(
+      `http://localhost:5000/tasks/${panel[listIndex].task[taskIndex]._id}`
+    );
+    delete panel[listIndex].task[taskIndex];
+    this.setState({ panel });
+  };
+
+  deleteList = async (listIndex) => {
+    debugger;
+    console.log("pressed");
+    let panel = [...this.state.panel];
+    await http.delete(`http://localhost:5000/panels/${panel[listIndex]._id}`);
+    const tasks = [...panel[listIndex].task];
+
+    tasks.forEach(async (element) => {
+      console.log(element);
+      await http.delete(`http://localhost:5000/tasks/${element._id}`);
+    });
+
+    const update = panel.filter((p) => p._id !== panel[listIndex]._id);
+    this.setState({ panel: update });
+  };
+
+  editList = async (index) => {
+    let show = this.state.show;
+    show = true;
+    this.setState({ show, titleChanged: index });
+  };
+
   render() {
     console.log(this.state);
-    debugger;
+
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <React.Fragment>
           <div className="row">
             {this.state.panel.map((item, index) => {
-              debugger;
               return (
                 <List
                   key={index}
@@ -280,6 +309,11 @@ class Board extends Component {
                   description={this.state.description}
                   id={this.state.panel[index].id}
                   className="col"
+                  deleteTask={(listIndex, taskIndex) =>
+                    this.deleteTask(listIndex, taskIndex)
+                  }
+                  deleteList={() => this.deleteList(index)}
+                  editList={() => this.editList(index)}
                 />
               );
             })}
