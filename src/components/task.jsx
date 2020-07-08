@@ -1,6 +1,6 @@
 import React from "react";
-import "../App.css";
 import { Draggable } from "react-beautiful-dnd";
+import "../App.css";
 
 const Task = (props) => (
   <React.Fragment>

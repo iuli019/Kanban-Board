@@ -1,5 +1,6 @@
 const router = require("express").Router();
-let Panel = require("../models/panel.model");
+let Panel = require("../models/panel");
+const auth = require("../middleware/auth");
 
 router.route("/").get((req, res) => {
   Panel.find()
@@ -7,7 +8,7 @@ router.route("/").get((req, res) => {
     .catch((err) => res.status(400).json("Error:" + err));
 });
 
-router.route("/add").post((req, res) => {
+router.route("/add").post(auth, (req, res) => {
   const title = req.body.title;
   const show = req.body.show;
   const id = req.body.id;
@@ -25,13 +26,13 @@ router.route("/:id").get((req, res) => {
     .catch((err) => res.status(400).json("Error:" + err));
 });
 
-router.route("/:id").delete((req, res) => {
+router.route("/:id").delete(auth, (req, res) => {
   Panel.findByIdAndDelete(req.params.id)
     .then(() => res.json("Panel deleted."))
     .catch((err) => res.status(400).json("Error:" + err));
 });
 
-router.route("/update/:id").post((req, res) => {
+router.route("/update/:id").post(auth, (req, res) => {
   Panel.findById(req.params.id)
     .then((panel) => {
       panel.title = req.body.title;

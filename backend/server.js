@@ -23,9 +23,13 @@ connection.once("open", () => {
 
 const panelsRouter = require("./routes/panels");
 const tasksRouter = require("./routes/tasks");
+const userRouter = require("./routes/users");
+const authRouter = require("./routes/auth");
 
 app.use("/panels", panelsRouter);
 app.use("/tasks", tasksRouter);
+app.use("/users", userRouter);
+app.use("/auth", authRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
