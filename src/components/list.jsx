@@ -1,7 +1,4 @@
 import React from "react";
-import Modal from "./modal";
-import "../App.css";
-import Task from "./task";
 import { Droppable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +6,9 @@ import {
   faTrash,
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
+import Modal from "./modal";
+import "../App.css";
+import Task from "./task";
 
 const List = (props) => {
   const showModalEdit = (index) => {

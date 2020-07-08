@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import { DragDropContext } from "react-beautiful-dnd";
+import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid";
+import Modal from "./modalBoard";
 import List from "./list";
+import http from "../services/httpService";
 import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
-import Modal from "./modalBoard";
-import { v4 as uuidv4 } from "uuid";
-import { DragDropContext } from "react-beautiful-dnd";
-import http from "../services/httpService";
 
 class Board extends Component {
   state = {
@@ -40,6 +41,7 @@ class Board extends Component {
         panelEdit
       );
       this.setState({ show: false, panel: titleUpdate });
+      toast("Updated list!");
     } else {
       const panel = [...this.state.panel];
       const newPanel = { show: false, title: title, id: uuidv4() };
@@ -52,6 +54,7 @@ class Board extends Component {
       const update = [...panel, addedPanel];
 
       this.setState({ show: false, panel: update });
+      toast("List added!");
     }
     console.log(this.state);
   };
@@ -151,6 +154,8 @@ class Board extends Component {
 
       panel[key].task = [...panel[key].task, newTask];
       this.setState({ panel });
+
+      toast("Added task!");
     } else {
       const index = this.state.indexEdit;
       const panel = [...this.state.panel];
@@ -171,6 +176,7 @@ class Board extends Component {
         taskEdit
       );
       this.setState({ panel });
+      toast("Updated task!");
     }
   };
 
@@ -259,6 +265,7 @@ class Board extends Component {
     );
     delete panel[listIndex].task[taskIndex];
     this.setState({ panel });
+    toast("Deleted task!");
   };
 
   deleteList = async (listIndex) => {
@@ -275,6 +282,7 @@ class Board extends Component {
 
     const update = panel.filter((p) => p._id !== panel[listIndex]._id);
     this.setState({ panel: update });
+    toast("Deleted list!");
   };
 
   editList = async (index) => {

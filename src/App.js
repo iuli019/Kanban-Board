@@ -1,15 +1,27 @@
 import React, { Component } from "react";
+import { Route, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import NavBar from "./components/navBar";
-import "bootstrap/dist/css/bootstrap.css";
-import "./App.css";
 import Board from "./components/board";
+import Login from "./components/login";
+import Register from "./components/register";
+import Logout from "./components/logout";
+import "bootstrap/dist/css/bootstrap.css";
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 class App extends Component {
   render() {
     return (
       <React.Fragment>
+        <ToastContainer />
         <NavBar />
-        <Board />
+        <Switch>
+          <Route path="/board" component={Board} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/logout" component={Logout} />
+        </Switch>
       </React.Fragment>
     );
   }
