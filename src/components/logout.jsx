@@ -1,9 +1,9 @@
 import { Component } from "react";
 
 class Logout extends Component {
-  state = {};
   componentDidMount() {
-    //refresh page and delete token
+    localStorage.removeItem("token");
+    window.location = "/board";
   }
   render() {
     return null;

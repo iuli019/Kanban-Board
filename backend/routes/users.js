@@ -32,7 +32,7 @@ router.route("/").post((req, res) => {
         newUser.password = hash;
         newUser.save().then((user) => {
           jwt.sign(
-            { id: user.id },
+            { id: user.id, name: user.name, email: user.email },
             jwtSecret,
             { expiresIn: 3600 },
             (err, token) => {
@@ -41,6 +41,10 @@ router.route("/").post((req, res) => {
                 token,
                 user: { name: user.name, id: user.id, email: user.email },
               });
+              // res
+              //   .header("x-auth-token", token)
+              //   .header("access-control-expose-headers", "x-auth-token")
+              //   .send(_.pick(user, ["id", "name", "email"]));
             }
           );
         });

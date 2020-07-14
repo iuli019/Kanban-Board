@@ -34,11 +34,13 @@ const List = (props) => {
       <div className="list-container">
         <div className="title">
           <h4>{props.title}</h4>
-          <FontAwesomeIcon
-            className="little"
-            icon={faEdit}
-            onClick={() => props.editList()}
-          />
+          {props.user && (
+            <FontAwesomeIcon
+              className="little"
+              icon={faEdit}
+              onClick={() => props.editList()}
+            />
+          )}
         </div>
         <Droppable droppableId={props.id}>
           {(provided) => {
@@ -60,13 +62,15 @@ const List = (props) => {
                           />
                         </div>
                         <div className="col">
-                          <FontAwesomeIcon
-                            onClick={() => {
-                              props.deleteTask(props.index, index);
-                            }}
-                            className="icon"
-                            icon={faTimesCircle}
-                          />
+                          {props.user && (
+                            <FontAwesomeIcon
+                              onClick={() => {
+                                props.deleteTask(props.index, index);
+                              }}
+                              className="icon"
+                              icon={faTimesCircle}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -77,19 +81,23 @@ const List = (props) => {
             );
           }}
         </Droppable>
-        <button
-          className="btn  btn-outline-dark button-modal"
-          type="button"
-          onClick={() => props.onModalNew(props.index)}
-        >
-          Add New Task
-        </button>
+        {props.user && (
+          <button
+            className="btn  btn-outline-dark button-modal"
+            type="button"
+            onClick={() => props.onModalNew(props.index)}
+          >
+            Add New Task
+          </button>
+        )}
 
-        <FontAwesomeIcon
-          className="icon2"
-          icon={faTrash}
-          onClick={() => props.deleteList()}
-        />
+        {props.user && (
+          <FontAwesomeIcon
+            className="icon2"
+            icon={faTrash}
+            onClick={() => props.deleteList()}
+          />
+        )}
       </div>
       <Modal
         className="container"

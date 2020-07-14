@@ -292,7 +292,7 @@ class Board extends Component {
   };
 
   render() {
-    console.log(this.state);
+    const { user } = this.props;
 
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
@@ -322,16 +322,19 @@ class Board extends Component {
                   }
                   deleteList={() => this.deleteList(index)}
                   editList={() => this.editList(index)}
+                  user={user}
                 />
               );
             })}
           </div>
-          <button
-            className=" button btn  btn-outline-dark"
-            onClick={this.handleClick}
-          >
-            New List
-          </button>
+          {user && (
+            <button
+              className=" button btn  btn-outline-dark"
+              onClick={this.handleClick}
+            >
+              New List
+            </button>
+          )}
           <Modal
             show={this.state.show}
             onTitleChange={this.handleTitle}

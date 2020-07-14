@@ -25,7 +25,7 @@ router.route("/").post((req, res) => {
       if (!isMatch) return res.status(400).json("Invalid password");
 
       jwt.sign(
-        { id: user.id },
+        { id: user.id, name: user.name, email: user.email },
         jwtSecret,
         { expiresIn: 3600 },
         (err, token) => {
