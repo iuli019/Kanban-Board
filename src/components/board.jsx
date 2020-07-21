@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
+import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import Modal from "./modalBoard";
+import MyVerticallyCenteredModal from "./bootstrapModal";
 import List from "./list";
 import http from "../services/httpService";
 import "bootstrap/dist/css/bootstrap.css";
@@ -56,22 +57,20 @@ class Board extends Component {
       this.setState({ show: false, panel: update });
       toast("List added!");
     }
-    console.log(this.state);
   };
 
   async populatePanel() {
     const { data: panel } = await http.get("http://localhost:5000/panels/");
-    console.log(panel);
+
     const { data: task } = await http.get("http://localhost:5000/tasks/");
-    console.log(task);
+
     const newPanel = panel.map((panel) => {
       const taskList = task.filter((task) => task.panelId === panel._id);
       panel = { ...panel, task: taskList };
-      console.log(panel);
+
       return panel;
     });
 
-    console.log(newPanel);
     this.setState({ panel: newPanel });
   }
 
@@ -81,7 +80,7 @@ class Board extends Component {
 
   reg = () => {
     const title = this.state.title;
-    console.log(title);
+
     this.hide(title);
   };
 
@@ -105,11 +104,9 @@ class Board extends Component {
   };
 
   showModalNew = (index) => {
-    console.log(index);
     const panel = [...this.state.panel];
     const key = index;
 
-    console.log(index);
     panel[key].show = true;
 
     this.setState({
@@ -124,7 +121,6 @@ class Board extends Component {
   onShowModalEdit = (index, taskIndex) => {
     console.log("pressed");
     const key = index;
-    console.log(index, taskIndex);
 
     const panel = this.state.panel;
     panel[key].show = true;
@@ -139,14 +135,11 @@ class Board extends Component {
   };
 
   hideModal = async (task, indexLista) => {
-    console.log(task);
     const key = indexLista;
     if (task.index === -1) {
       const panel = this.state.panel;
-      console.log(panel[key]);
-      panel[key].show = false;
 
-      console.log(panel[key]);
+      panel[key].show = false;
 
       const newTask = { ...task, panelId: panel[key]._id, indexEdit: 0 };
 
@@ -155,14 +148,13 @@ class Board extends Component {
       panel[key].task = [...panel[key].task, newTask];
       this.setState({ panel });
 
-      toast("Added task!");
+      toast("Task added!");
     } else {
       const index = this.state.indexEdit;
       const panel = [...this.state.panel];
       panel[key].show = false;
 
       const taskEdit = panel[key].task[index];
-      console.log(taskEdit);
 
       taskEdit.name = this.state.name;
       taskEdit.description = this.state.description;
@@ -176,7 +168,7 @@ class Board extends Component {
         taskEdit
       );
       this.setState({ panel });
-      toast("Updated task!");
+      toast("Task updated!");
     }
   };
 
@@ -233,7 +225,6 @@ class Board extends Component {
     newPanel[destinationListIndex] = newDestinationList;
 
     this.setState({ panel: newPanel });
-    console.log(this.state.panel);
   };
 
   removeFromList = async (list, index) => {
@@ -276,7 +267,6 @@ class Board extends Component {
     const tasks = [...panel[listIndex].task];
 
     tasks.forEach(async (element) => {
-      console.log(element);
       await http.delete(`http://localhost:5000/tasks/${element._id}`);
     });
 
@@ -291,54 +281,60 @@ class Board extends Component {
     this.setState({ show, titleChanged: index });
   };
 
+  modalCloseButton = () => {
+    this.setState({ show: false });
+  };
+
   render() {
     const { user } = this.props;
 
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <React.Fragment>
-          <div className="row">
+          <div className="d-flex flex-row flex-wrap justify-content-around align-content-around  p-2 ">
             {this.state.panel.map((item, index) => {
               return (
-                <List
+                <div
+                  className="list-border d-flex flex-column justify-content-centre"
                   key={index}
-                  index={index}
-                  title={item.title}
-                  onDescp={this.handleDescpChange}
-                  onName={this.handleNameChange}
-                  onSModal={this.state.panel[index].show}
-                  onModalEdit={(taskIndex) =>
-                    this.onShowModalEdit(index, taskIndex)
-                  }
-                  onReg={() => this.onReg(index)}
-                  task={item.task}
-                  onModalNew={() => this.showModalNew(index)}
-                  name={this.state.name}
-                  description={this.state.description}
-                  id={this.state.panel[index].id}
-                  className="col"
-                  deleteTask={(listIndex, taskIndex) =>
-                    this.deleteTask(listIndex, taskIndex)
-                  }
-                  deleteList={() => this.deleteList(index)}
-                  editList={() => this.editList(index)}
-                  user={user}
-                />
+                >
+                  <List
+                    index={index}
+                    title={item.title}
+                    onDescp={this.handleDescpChange}
+                    onName={this.handleNameChange}
+                    onSModal={this.state.panel[index].show}
+                    onModalEdit={(taskIndex) =>
+                      this.onShowModalEdit(index, taskIndex)
+                    }
+                    onReg={() => this.onReg(index)}
+                    task={item.task}
+                    onModalNew={() => this.showModalNew(index)}
+                    name={this.state.name}
+                    description={this.state.description}
+                    id={this.state.panel[index].id}
+                    className="col"
+                    deleteTask={(listIndex, taskIndex) =>
+                      this.deleteTask(listIndex, taskIndex)
+                    }
+                    deleteList={() => this.deleteList(index)}
+                    editList={() => this.editList(index)}
+                    user={user}
+                  />
+                </div>
               );
             })}
           </div>
           {user && (
-            <button
-              className=" button btn  btn-outline-dark"
-              onClick={this.handleClick}
-            >
+            <Button variant="outline-dark" onClick={this.handleClick}>
               New List
-            </button>
+            </Button>
           )}
-          <Modal
+          <MyVerticallyCenteredModal
             show={this.state.show}
             onTitleChange={this.handleTitle}
             onClick={this.reg}
+            onClose={this.modalCloseButton}
           />
         </React.Fragment>
       </DragDropContext>

@@ -6,7 +6,9 @@ class Profile extends Component {
     //refresh page and delete token
   }
   render() {
-    return <h1>My profile</h1>;
+    return (
+      <h1 className="d-flex flex-column justify-content-around">My profile</h1>
+    );
   }
 }
 

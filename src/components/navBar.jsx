@@ -1,18 +1,19 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
+import { Navbar } from "react-bootstrap/";
 
 const NavBar = ({ user }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light ">
-      <Link className="navbar-brand my-2" to="/board">
-        React Board
+    <Navbar className="navbar navbar-expand-lg navbar-light bg-dark  mb-5">
+      <Link className="navbar-brand text-light my-2" to="/">
+        Kanban Board
       </Link>
       {!user && (
         <React.Fragment>
-          <NavLink className="nav-item nav-link text-dark" to="/login">
+          <NavLink className="nav-item nav-link text-light" to="/login">
             Login
           </NavLink>
-          <NavLink className="nav-item nav-link text-dark" to="/register">
+          <NavLink className="nav-item nav-link text-light" to="/register">
             Register
           </NavLink>
         </React.Fragment>
@@ -20,15 +21,15 @@ const NavBar = ({ user }) => {
 
       {user && (
         <React.Fragment>
-          <NavLink className="nav-item nav-link text-dark" to="/profile">
+          <NavLink className="nav-item nav-link text-light" to="/profile">
             {user.name}
           </NavLink>
-          <NavLink className="nav-item nav-link text-dark" to="/logout">
+          <NavLink className="nav-item nav-link text-light" to="/logout">
             Logout
           </NavLink>
         </React.Fragment>
       )}
-    </nav>
+    </Navbar>
   );
 };
 

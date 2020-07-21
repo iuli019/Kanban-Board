@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
   return (
@@ -7,8 +8,11 @@ const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
       path={path}
       {...rest}
       render={(props) => {
-        if (!localStorage.getItem("token")) return <Redirect to="/login" />;
-        return Component ? <Component {...props} /> : render(props);
+        if (!localStorage.getItem("token")) {
+          toast("No token!");
+          return <Redirect to="/login" />;
+        }
+        return Component ? <Component {...rest} /> : render(rest);
       }}
     />
   );

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import http from "../services/httpService";
 import { toast } from "react-toastify";
+import { Form, Button } from "react-bootstrap";
+import http from "../services/httpService";
 import "../comp.css";
 
 class Login extends Component {
@@ -36,38 +37,31 @@ class Login extends Component {
 
   render() {
     return (
-      <div className="container-sm box">
-        <h1 className="title">Login</h1>
-        <form>
-          <div className="form-group">
-            <label>Email address</label>
-            <input
-              onChange={(e) => this.emailChange(e)}
+      <div className="container mt-5">
+        <h1 className="mb-5"> Login</h1>
+        <Form>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control
               type="email"
-              className="form-control"
-              id="exampleInputEmail1"
-              aria-describedby="emailHelp"
+              placeholder="Enter email"
+              onChange={(e) => this.emailChange(e)}
             />
-          </div>
+          </Form.Group>
 
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              onChange={(e) => this.passwordChange(e)}
+          <Form.Group controlId="formBasicPassword">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
               type="password"
-              className="form-control"
-              id="exampleInputPassword1"
+              placeholder="Password"
+              onChange={(e) => this.passwordChange(e)}
             />
-          </div>
+          </Form.Group>
 
-          <button
-            onClick={this.handleClick}
-            type="button"
-            className=" btn  btn-outline-dark"
-          >
+          <Button variant="outline-dark" onClick={this.handleClick}>
             Login
-          </button>
-        </form>
+          </Button>
+        </Form>
       </div>
     );
   }

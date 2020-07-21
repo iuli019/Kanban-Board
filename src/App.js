@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import JwtDecode from "jwt-decode";
 import NavBar from "./components/navBar";
@@ -33,14 +33,15 @@ class App extends Component {
         <ToastContainer />
         <NavBar user={user} />
         <Switch>
-          <Route
-            path="/board"
-            render={(props) => <Board {...props} user={user} />}
-          />
+          <ProtectedRoute path="/board" component={Board} user={user} />
+
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/logout" component={Logout} />
           <ProtectedRoute path="/profile" component={Profile} />
+          <Route exact path="/">
+            <Redirect to="/board" />
+          </Route>
         </Switch>
       </React.Fragment>
     );
