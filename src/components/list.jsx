@@ -2,42 +2,59 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
-import MyVerticallyCenteredModal from "./taskBModal";
+import MyVerticallyCenteredModal from "./taskModal";
 import "../App.css";
 import Task from "./task";
 
-const List = (props) => {
+function List({
+  onModalEdit,
+  onName,
+  onDescp,
+  onReg,
+  task,
+  title,
+  editList,
+  id,
+  listIndex,
+  onModalNew,
+  onSModal,
+  deleteList,
+  deleteTask,
+  user,
+  name,
+  description,
+}) {
   const showModalEdit = (index) => {
-    props.onModalEdit(index);
+    onModalEdit(index);
   };
 
   const handleNameChange = (e) => {
-    props.onName(e);
+    onName(e);
   };
 
   const handleDescpChange = (e) => {
-    props.onDescp(e);
+    onDescp(e);
   };
 
-  const reg = () => {
-    props.onReg();
+  const reg = (state) => {
+    onReg(state);
   };
-  if (!props.task) return null;
-  else console.log(props.task);
+  if (!task) return null;
+  else console.log(task);
 
   return (
     <React.Fragment>
       <div className="d-inline-flex flex-row flex-wrap justify-content-center">
-        <h4 className="mb-4">{props.title}</h4>
-        {props.user && (
+        <h4 className="mb-4">{title}</h4>
+        {user && (
           <FontAwesomeIcon
             className="mt-2 ml-2"
             icon={faEdit}
-            onClick={() => props.editList()}
+            onClick={() => editList()}
           />
         )}
       </div>
-      <Droppable droppableId={props.id}>
+      <Droppable droppableId={id}>
         {(provided) => {
           return (
             <div
@@ -45,7 +62,7 @@ const List = (props) => {
               ref={provided.innerRef}
               className="task mb-4"
             >
-              {props.task.map((item, index) => {
+              {task.map((item, index) => {
                 return (
                   <div
                     className="d-flex flex-column flex-wrap justify-content-center "
@@ -59,10 +76,10 @@ const List = (props) => {
                           description={item.description}
                           id={item.id}
                           index={index}
-                          delete={() => {
-                            props.deleteTask(props.index, index);
+                          deleteT={() => {
+                            deleteTask(listIndex, index);
                           }}
-                          user={props.user}
+                          user={user}
                           onClick={() => showModalEdit(index)}
                         />
                       </div>
@@ -76,35 +93,35 @@ const List = (props) => {
         }}
       </Droppable>
       <div className="d-flex flex-row justify-content-between">
-        {props.user && (
+        {user && (
           <button
             className="btn  btn-outline-dark button-modal"
             type="button"
-            onClick={() => props.onModalNew(props.index)}
+            onClick={() => onModalNew(listIndex)}
           >
             Add New Task
           </button>
         )}
 
-        {props.user && (
+        {user && (
           <FontAwesomeIcon
             className="mt-3"
             icon={faTrash}
-            onClick={() => props.deleteList()}
+            onClick={() => deleteList()}
           />
         )}
       </div>
       <MyVerticallyCenteredModal
         className="container"
-        show={props.onSModal}
+        show={onSModal}
         onClose={reg}
         onNameChange={handleNameChange}
         onDescpChange={handleDescpChange}
-        name={props.name}
-        description={props.description}
+        name={name}
+        description={description}
       />
     </React.Fragment>
   );
-};
+}
 
 export default List;

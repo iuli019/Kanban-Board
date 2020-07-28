@@ -3,7 +3,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import MyVerticallyCenteredModal from "./bootstrapModal";
+import MyVerticallyCenteredModal from "./listModal";
 import List from "./list";
 import http from "../services/httpService";
 import "bootstrap/dist/css/bootstrap.css";
@@ -30,39 +30,33 @@ class Board extends Component {
   };
 
   hide = async (title) => {
-    debugger;
     const titleIndex = this.state.titleChanged;
-
-    if (titleIndex >= 0) {
-      let titleUpdate = [...this.state.panel];
-      titleUpdate[titleIndex].title = title;
-      const panelEdit = titleUpdate[titleIndex];
-      await http.post(
-        `http://localhost:5000/panels/update/${panelEdit._id}`,
-        panelEdit
-      );
-      this.setState({ show: false, panel: titleUpdate });
-      toast("Updated list!");
-    } else {
+    console.log(titleIndex);
+    if (!titleIndex) {
       const panel = [...this.state.panel];
       const newPanel = { show: false, title: title, id: uuidv4() };
 
-      const { data: addedPanel } = await http.post(
-        "http://localhost:5000/panels/add",
-        newPanel
-      );
+      const addedPanel = await http.addPanel(newPanel);
       addedPanel.task = [];
       const update = [...panel, addedPanel];
 
       this.setState({ show: false, panel: update });
       toast("List added!");
+    } else {
+      let titleUpdate = [...this.state.panel];
+      titleUpdate[titleIndex].title = title;
+      const panelEdit = titleUpdate[titleIndex];
+
+      http.updatePanel(panelEdit, panelEdit._id);
+
+      this.setState({ show: false, panel: titleUpdate });
+      toast("Updated list!");
     }
   };
 
   async populatePanel() {
-    const { data: panel } = await http.get("http://localhost:5000/panels/");
-
-    const { data: task } = await http.get("http://localhost:5000/tasks/");
+    const panel = await http.getPanels();
+    const task = await http.getTasks();
 
     const newPanel = panel.map((panel) => {
       const taskList = task.filter((task) => task.panelId === panel._id);
@@ -92,7 +86,7 @@ class Board extends Component {
     this.setState({ name: e });
   };
 
-  onReg = (indexLista) => {
+  onReg = (indexLista, state) => {
     const task = {
       name: this.state.name,
       description: this.state.description,
@@ -100,7 +94,7 @@ class Board extends Component {
       id: Math.floor(Math.random() * (100 - 10 + 1)) + 10,
       _id: this.state.taskId,
     };
-    this.hideModal(task, indexLista);
+    this.hideModal(task, indexLista, state);
   };
 
   showModalNew = (index) => {
@@ -134,41 +128,44 @@ class Board extends Component {
     });
   };
 
-  hideModal = async (task, indexLista) => {
+  hideModal = async (task, indexLista, state) => {
     const key = indexLista;
-    if (task.index === -1) {
-      const panel = this.state.panel;
+    if (state) {
+      if (task.index === -1) {
+        const panel = this.state.panel;
 
-      panel[key].show = false;
+        panel[key].show = false;
 
-      const newTask = { ...task, panelId: panel[key]._id, indexEdit: 0 };
+        const newTask = { ...task, panelId: panel[key]._id, indexEdit: 0 };
 
-      await http.post("http://localhost:5000/tasks/add", newTask);
+        http.addTask(newTask);
 
-      panel[key].task = [...panel[key].task, newTask];
-      this.setState({ panel });
+        panel[key].task = [...panel[key].task, newTask];
+        this.setState({ panel });
 
-      toast("Task added!");
+        toast("Task added!");
+      } else {
+        const index = this.state.indexEdit;
+        const panel = [...this.state.panel];
+        panel[key].show = false;
+
+        const taskEdit = panel[key].task[index];
+
+        taskEdit.name = this.state.name;
+        taskEdit.description = this.state.description;
+        taskEdit.indexEdit = this.state.indexEdit;
+        taskEdit.panelId = panel[key]._id;
+
+        panel[key].task[index] = taskEdit;
+
+        http.updateTask(taskEdit, task._id);
+        this.setState({ panel });
+        toast("Task updated!");
+      }
     } else {
-      const index = this.state.indexEdit;
       const panel = [...this.state.panel];
       panel[key].show = false;
-
-      const taskEdit = panel[key].task[index];
-
-      taskEdit.name = this.state.name;
-      taskEdit.description = this.state.description;
-      taskEdit.indexEdit = this.state.indexEdit;
-      taskEdit.panelId = panel[key]._id;
-
-      panel[key].task[index] = taskEdit;
-
-      await http.post(
-        `http://localhost:5000/tasks/update/${task._id}`,
-        taskEdit
-      );
       this.setState({ panel });
-      toast("Task updated!");
     }
   };
 
@@ -232,7 +229,7 @@ class Board extends Component {
     const taskId = newList[index]._id;
     newList.splice(index, 1);
 
-    await http.delete(`http://localhost:5000/tasks/${taskId}`);
+    await http.deleteTask(taskId);
     return newList;
   };
 
@@ -243,31 +240,27 @@ class Board extends Component {
     newTask.panelId = listID;
     const secondHalf = newtaskList;
 
-    await http.post("http://localhost:5000/tasks/add", newTask);
+    http.addTask(newTask);
     return [...firstHalf, task, ...secondHalf];
   };
 
   deleteTask = async (listIndex, taskIndex) => {
-    debugger;
     console.log("pressed");
     let panel = [...this.state.panel];
-    await http.delete(
-      `http://localhost:5000/tasks/${panel[listIndex].task[taskIndex]._id}`
-    );
+    http.deleteTask(panel[listIndex].task[taskIndex]._id);
     delete panel[listIndex].task[taskIndex];
     this.setState({ panel });
     toast("Deleted task!");
   };
 
   deleteList = async (listIndex) => {
-    debugger;
     console.log("pressed");
     let panel = [...this.state.panel];
-    await http.delete(`http://localhost:5000/panels/${panel[listIndex]._id}`);
+    http.deleteList(panel[listIndex]._id);
     const tasks = [...panel[listIndex].task];
 
     tasks.forEach(async (element) => {
-      await http.delete(`http://localhost:5000/tasks/${element._id}`);
+      await http.deleteTask(element._id);
     });
 
     const update = panel.filter((p) => p._id !== panel[listIndex]._id);
@@ -287,7 +280,7 @@ class Board extends Component {
 
   render() {
     const { user } = this.props;
-
+    console.log(this.state);
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <React.Fragment>
@@ -299,7 +292,7 @@ class Board extends Component {
                   key={index}
                 >
                   <List
-                    index={index}
+                    listIndex={index}
                     title={item.title}
                     onDescp={this.handleDescpChange}
                     onName={this.handleNameChange}
@@ -307,7 +300,7 @@ class Board extends Component {
                     onModalEdit={(taskIndex) =>
                       this.onShowModalEdit(index, taskIndex)
                     }
-                    onReg={() => this.onReg(index)}
+                    onReg={(state) => this.onReg(index, state)}
                     task={item.task}
                     onModalNew={() => this.showModalNew(index)}
                     name={this.state.name}

@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
+function ProtectedRoute({ path, component: Component, render, ...rest }) {
   return (
     <Route
       path={path}
@@ -16,6 +16,6 @@ const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
       }}
     />
   );
-};
+}
 
 export default ProtectedRoute;

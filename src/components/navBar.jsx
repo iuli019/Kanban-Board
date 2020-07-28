@@ -2,7 +2,7 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Navbar } from "react-bootstrap/";
 
-const NavBar = ({ user }) => {
+function NavBar({ user }) {
   return (
     <Navbar className="navbar navbar-expand-lg navbar-light bg-dark  mb-5">
       <Link className="navbar-brand text-light my-2" to="/">
@@ -31,6 +31,6 @@ const NavBar = ({ user }) => {
       )}
     </Navbar>
   );
-};
+}
 
 export default NavBar;

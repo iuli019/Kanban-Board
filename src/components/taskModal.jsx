@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button, InputGroup, FormControl } from "react-bootstrap";
 
-function MyVerticallyCenteredModal({ onNameChange, show, onClose, onHide }) {
+function MyVerticallyCenteredModal({ onNameChange, show, onClose }) {
   const nameChange = (e) => {
     onNameChange(e.target.value);
   };
@@ -13,7 +13,7 @@ function MyVerticallyCenteredModal({ onNameChange, show, onClose, onHide }) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton onClick={onClose}>
+      <Modal.Header closeButton onClick={() => onClose(false)}>
         <Modal.Title id="contained-modal-title-vcenter">
           Add/Edit Task
         </Modal.Title>
@@ -27,7 +27,7 @@ function MyVerticallyCenteredModal({ onNameChange, show, onClose, onHide }) {
         </InputGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-dark" onClick={onClose}>
+        <Button variant="outline-dark" onClick={() => onClose(true)}>
           Add
         </Button>
       </Modal.Footer>
