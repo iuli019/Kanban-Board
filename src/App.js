@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import JwtDecode from "jwt-decode";
@@ -13,39 +13,36 @@ import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-class App extends Component {
-  state = {};
+function App() {
+  const [user, setUser] = useState();
 
-  componentDidMount() {
+  useEffect(() => {
     try {
       const jwt = localStorage.getItem("token");
       const user = JwtDecode(jwt);
       console.log(user);
 
-      this.setState({ user });
+      setUser(user);
     } catch (ex) {}
-  }
+  }, []);
 
-  render() {
-    const user = this.state.user;
-    return (
-      <React.Fragment>
-        <ToastContainer />
-        <NavBar user={user} />
-        <Switch>
-          <ProtectedRoute path="/board" component={Board} user={user} />
+  return (
+    <React.Fragment>
+      <ToastContainer />
+      <NavBar user={user} />
+      <Switch>
+        <ProtectedRoute path="/board" component={Board} user={user} />
 
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
-          <Route path="/logout" component={Logout} />
-          <ProtectedRoute path="/profile" component={Profile} />
-          <Route exact path="/">
-            <Redirect to="/board" />
-          </Route>
-        </Switch>
-      </React.Fragment>
-    );
-  }
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/logout" component={Logout} />
+        <ProtectedRoute path="/profile" component={Profile} />
+        <Route exact path="/">
+          <Redirect to="/board" />
+        </Route>
+      </Switch>
+    </React.Fragment>
+  );
 }
 
 export default App;

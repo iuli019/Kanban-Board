@@ -1,13 +1,12 @@
-import { Component } from "react";
+import { useEffect } from "react";
 
-class Logout extends Component {
-  componentDidMount() {
+function Logout() {
+  useEffect(() => {
     localStorage.removeItem("token");
     window.location = "/login";
-  }
-  render() {
-    return null;
-  }
+  }, []);
+
+  return null;
 }
 
-export default Logout; // ????
+export default Logout;

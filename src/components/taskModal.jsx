@@ -2,10 +2,6 @@ import React from "react";
 import { Modal, Button, InputGroup, FormControl } from "react-bootstrap";
 
 function MyVerticallyCenteredModal({ onNameChange, show, onClose }) {
-  const nameChange = (e) => {
-    onNameChange(e.target.value);
-  };
-
   return (
     <Modal
       show={show}
@@ -23,7 +19,10 @@ function MyVerticallyCenteredModal({ onNameChange, show, onClose }) {
           <InputGroup.Prepend>
             <InputGroup.Text id="inputGroup-sizing-sm">Name </InputGroup.Text>
           </InputGroup.Prepend>
-          <FormControl aria-label="Name" onChange={(e) => nameChange(e)} />
+          <FormControl
+            aria-label="Name"
+            onChange={(e) => onNameChange(e.target.value)}
+          />
         </InputGroup>
       </Modal.Body>
       <Modal.Footer>

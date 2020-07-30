@@ -10,7 +10,7 @@ function List({
   onModalEdit,
   onName,
   onDescp,
-  onReg,
+  onTaskEdit,
   task,
   title,
   editList,
@@ -24,23 +24,11 @@ function List({
   name,
   description,
 }) {
-  const showModalEdit = (index) => {
-    onModalEdit(index);
+  const modalState = (state) => {
+    onTaskEdit(state);
   };
 
-  const handleNameChange = (e) => {
-    onName(e);
-  };
-
-  const handleDescpChange = (e) => {
-    onDescp(e);
-  };
-
-  const reg = (state) => {
-    onReg(state);
-  };
   if (!task) return null;
-  else console.log(task);
 
   return (
     <React.Fragment>
@@ -80,7 +68,7 @@ function List({
                             deleteTask(listIndex, index);
                           }}
                           user={user}
-                          onClick={() => showModalEdit(index)}
+                          onClick={() => onModalEdit(index)}
                         />
                       </div>
                     </div>
@@ -114,9 +102,13 @@ function List({
       <MyVerticallyCenteredModal
         className="container"
         show={onSModal}
-        onClose={reg}
-        onNameChange={handleNameChange}
-        onDescpChange={handleDescpChange}
+        onClose={modalState}
+        onNameChange={(e) => {
+          onName(e);
+        }}
+        onDescpChange={(e) => {
+          onDescp(e);
+        }}
         name={name}
         description={description}
       />

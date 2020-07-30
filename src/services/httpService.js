@@ -52,8 +52,6 @@ const deleteList = async (taskList) => {
 const getPanels = async () => {
   const { data: panel } = await axios.get("http://localhost:5000/panels/");
 
-  console.log(panel);
-
   return panel;
 };
 
@@ -75,10 +73,6 @@ const updatePanel = async (panel, listId) => {
 };
 
 export default {
-  get: axios.get,
-  post: axios.post,
-  put: axios.put,
-  delete: axios.delete,
   loginUser,
   addTask,
   updateTask,
