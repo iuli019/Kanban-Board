@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { Button } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -10,7 +10,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "../App.css";
 
 function Board(props) {
-  const [panel, setPanel] = useState([]);
+  const [panel, setPanel] = useState([
+    // { id: "45676", show: false, task: [], title: "", __v: "", _id: "" },
+  ]);
   const [show, setShow] = useState(false);
 
   const [name, setName] = useState();
@@ -21,6 +23,7 @@ function Board(props) {
   const [indexEdit, setIndexEdit] = useState(0);
   const [titleIndex, setTitleIndex] = useState();
 
+  console.log(panel);
   const populatePanel = async () => {
     const panel = await http.getPanels();
     const task = await http.getTasks();
@@ -35,7 +38,7 @@ function Board(props) {
     setPanel(newPanel);
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     populatePanel();
   }, []);
 
@@ -113,9 +116,10 @@ function Board(props) {
         update[key].show = false;
 
         const newTask = { ...task, panelId: update[key]._id, indexEdit: 0 };
-        http.addTask(newTask);
+        const addedTask = await http.addTask(newTask);
 
-        update[key].task = [...update[key].task, newTask];
+        console.log(addedTask);
+        update[key].task = [...update[key].task, addedTask];
 
         setPanel(update);
         toast("Task added!");
@@ -175,14 +179,14 @@ function Board(props) {
 
     const newSourceList = {
       ...sourceList,
-      task: await removeFromList(sourceList.task, source.index),
+      task: removeFromList(sourceList.task, source.index),
     };
 
     const panels = [...panel];
 
     const newDestinationList = {
       ...destinationList,
-      task: await addToList(
+      task: addToList(
         source.droppableId === destination.droppableId
           ? newSourceList.task
           : destinationList.task,
@@ -199,26 +203,39 @@ function Board(props) {
     newPanel[destinationListIndex] = newDestinationList;
 
     setPanel(newPanel);
+
+    await updateTask(
+      sourceList.task[source.index],
+      source.droppableId === destination.droppableId
+        ? panels[sourceListIndex]._id
+        : panels[destinationListIndex]._id
+    );
   };
 
-  const removeFromList = async (list, index) => {
+  const removeFromList = (list, index) => {
     const newList = [...list];
     const taskId = newList[index]._id;
     newList.splice(index, 1);
 
-    await http.deleteTask(taskId);
+    // await http.deleteTask(taskId);
     return newList;
   };
 
-  const addToList = async (taskList, index, task, listID) => {
+  const addToList = (taskList, index, task, listID) => {
     const newtaskList = [...taskList];
     const firstHalf = newtaskList.splice(0, index);
-    const newTask = task;
+    const newTask = { ...task };
     newTask.panelId = listID;
     const secondHalf = newtaskList;
 
-    http.addTask(newTask);
+    // http.addTask(newTask);
     return [...firstHalf, task, ...secondHalf];
+  };
+
+  const updateTask = async (task, destinationListID) => {
+    const movedTask = { ...task };
+    movedTask.panelId = destinationListID;
+    await http.updateTask(movedTask, movedTask._id);
   };
 
   const deleteTask = async (listIndex, taskIndex) => {

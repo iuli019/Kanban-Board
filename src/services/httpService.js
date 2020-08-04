@@ -34,7 +34,11 @@ const loginUser = async (path, user) => {
 };
 
 const addTask = async (task) => {
-  await axios.post("http://localhost:5000/tasks/add", task);
+  const { data: addedTask } = await axios.post(
+    "http://localhost:5000/tasks/add",
+    task
+  );
+  return addedTask;
 };
 
 const updateTask = async (task, taskId) => {

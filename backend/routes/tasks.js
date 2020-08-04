@@ -26,7 +26,7 @@ router.route("/add").post(auth, (req, res) => {
 
   newTask
     .save()
-    .then(() => res.json("Task added!"))
+    .then((newTask) => res.json(newTask))
     .catch((err) => res.status(400).json("Error:" + err));
 });
 
