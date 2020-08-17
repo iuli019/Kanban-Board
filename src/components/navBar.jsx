@@ -1,11 +1,36 @@
 import React from "react";
+import { Link, NavLink } from "react-router-dom";
+import { Navbar } from "react-bootstrap/";
 
-const NavBar = () => {
+function NavBar({ user }) {
   return (
-    <nav className="navbar navbar-dark bg-dark">
-      <span className="navbar-brand mb-0 h1">React Board</span>
-    </nav>
+    <Navbar className="navbar navbar-expand-lg navbar-light bg-dark  mb-5">
+      <Link className="navbar-brand text-light my-2" to="/">
+        Kanban Board
+      </Link>
+      {!user && (
+        <React.Fragment>
+          <NavLink className="nav-item nav-link text-light" to="/login">
+            Login
+          </NavLink>
+          <NavLink className="nav-item nav-link text-light" to="/register">
+            Register
+          </NavLink>
+        </React.Fragment>
+      )}
+
+      {user && (
+        <React.Fragment>
+          <NavLink className="nav-item nav-link text-light" to="/profile">
+            {user.name}
+          </NavLink>
+          <NavLink className="nav-item nav-link text-light" to="/logout">
+            Logout
+          </NavLink>
+        </React.Fragment>
+      )}
+    </Navbar>
   );
-};
+}
 
 export default NavBar;

@@ -1,72 +1,119 @@
 import React from "react";
-import Modal from "./modal";
+import { Droppable } from "react-beautiful-dnd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import MyVerticallyCenteredModal from "./taskModal";
 import "../App.css";
 import Task from "./task";
-import { Droppable } from "react-beautiful-dnd";
 
-const List = (props) => {
-  const showModalEdit = (index) => {
-    props.onModalEdit(index);
+function List({
+  onModalEdit,
+  onName,
+  onDescp,
+  onTaskEdit,
+  task,
+  title,
+  editList,
+  id,
+  listIndex,
+  onModalNew,
+  onSModal,
+  deleteList,
+  deleteTask,
+  user,
+  name,
+  description,
+}) {
+  const modalState = (state) => {
+    onTaskEdit(state);
   };
 
-  const handleNameChange = (e) => {
-    props.onName(e);
-  };
-
-  const handleDescpChange = (e) => {
-    props.onDescp(e);
-  };
-
-  const reg = () => {
-    props.onReg();
-  };
-  if (!props.task) return null;
-  else console.log(props.task);
+  if (!task) return null;
 
   return (
     <React.Fragment>
-      <div className="list-container">
-        <h4 className="title">{props.title}</h4>
-        <Droppable droppableId={props.id}>
-          {(provided) => {
-            return (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {props.task.map((item, index) => {
-                  return (
-                    <div key={index} onClick={() => showModalEdit(index)}>
-                      <Task
-                        name={item.name}
-                        description={item.description}
-                        id={item.id}
-                        index={index}
-                      />
-                    </div>
-                  );
-                })}
-                {provided.placeholder}
-              </div>
-            );
-          }}
-        </Droppable>
-        <button
-          className="btn  btn-outline-dark button-modal"
-          type="button"
-          onClick={() => props.onModalNew(props.index)}
-        >
-          Add New Task
-        </button>
+      <div className="d-inline-flex flex-row flex-wrap justify-content-center">
+        <h4 className="mb-4">{title}</h4>
+        {user && (
+          <FontAwesomeIcon
+            className="mt-2 ml-2"
+            icon={faEdit}
+            onClick={() => editList()}
+          />
+        )}
       </div>
-      <Modal
+      <Droppable droppableId={id}>
+        {(provided) => {
+          return (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="task mb-4"
+            >
+              {task.map((item, index) => {
+                return (
+                  <div
+                    className="d-flex flex-column flex-wrap justify-content-center "
+                    key={index}
+                  >
+                    <div className="">
+                      <div>
+                        <Task
+                          className=""
+                          name={item.name}
+                          description={item.description}
+                          id={item.id}
+                          index={index}
+                          deleteT={() => {
+                            deleteTask(listIndex, index);
+                          }}
+                          user={user}
+                          onClick={() => onModalEdit(index)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {provided.placeholder}
+            </div>
+          );
+        }}
+      </Droppable>
+      <div className="d-flex flex-row justify-content-between">
+        {user && (
+          <button
+            className="btn  btn-outline-dark button-modal"
+            type="button"
+            onClick={() => onModalNew(listIndex)}
+          >
+            Add New Task
+          </button>
+        )}
+
+        {user && (
+          <FontAwesomeIcon
+            className="mt-3"
+            icon={faTrash}
+            onClick={() => deleteList()}
+          />
+        )}
+      </div>
+      <MyVerticallyCenteredModal
         className="container"
-        show={props.onSModal}
-        onClose={reg}
-        onNameChange={handleNameChange}
-        onDescpChange={handleDescpChange}
-        name={props.name}
-        description={props.description}
-      ></Modal>
+        show={onSModal}
+        onClose={modalState}
+        onNameChange={(e) => {
+          onName(e);
+        }}
+        onDescpChange={(e) => {
+          onDescp(e);
+        }}
+        name={name}
+        description={description}
+      />
     </React.Fragment>
   );
-};
+}
 
 export default List;
